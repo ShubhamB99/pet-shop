@@ -3,20 +3,19 @@ App = {
   contracts: {},
 
   init: async function() {
-    // Load pets.
-    $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
+    // Load creators.
+    // Ideally JSON should be auto-populated by a function
+    $.getJSON('../creators.json', function(data) {                  // Get this asap ***********
+      var creatorsRow = $('#creatorsRow');
+      var creatorTemplate = $('#creatorTemplate');
 
       for (i = 0; i < data.length; i ++) {
-        petTemplate.find('.panel-title').text(data[i].name);
-        petTemplate.find('img').attr('src', data[i].picture);
-        petTemplate.find('.pet-breed').text(data[i].breed);
-        petTemplate.find('.pet-age').text(data[i].age);
-        petTemplate.find('.pet-location').text(data[i].location);
-        petTemplate.find('.btn-adopt').attr('data-id', data[i].id);
+        creatorTemplate.find('.panel-title').text(data[i].name);
+        creatorTemplate.find('img').attr('src', data[i].picture);
+        creatorTemplate.find('.btn-tip').attr('data-id', data[i].id);
+        creatorTemplate.find('.btn-subscribe').attr('data-id', data[i].id);
 
-        petsRow.append(petTemplate.html());
+        creatorsRow.append(creatorTemplate.html());
       }
     });
 
@@ -49,23 +48,24 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('Adoption.json', function(data) {
+    $.getJSON('Ethreon.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
-      var AdoptionArtifact = data;
-      App.contracts.Adoption = TruffleContract(AdoptionArtifact);
+      var EthreonArtifact = data;
+      App.contracts.Ethreon = TruffleContract(EthreonArtifact);
     
       // Set the provider for our contract
-      App.contracts.Adoption.setProvider(App.web3Provider);
+      App.contracts.Ethreon.setProvider(App.web3Provider);
     
       // Use our contract to retrieve and mark the adopted pets
-      return App.markAdopted();
+      return App.markAdopted();                                             // Do a similar to get mark subscribed
     });
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
+    $(document).on('click', '.btn-subscribe', App.newSubscription(1));      // Add data-id instead of static number
+    $(document).on('click', '.btn-tip', App.tipCreator(1));
   },
 
   markAdopted: function(adopters, account) {
@@ -79,7 +79,7 @@ App = {
 
     var petId = parseInt($(event.target).data('id'));
 
-    var adoptionInstance;
+    var ethreonInstance;
 
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -88,11 +88,11 @@ App = {
     
       var account = accounts[0];
     
-      App.contracts.Adoption.deployed().then(function(instance) {
-        adoptionInstance = instance;
+      App.contracts.Ethreon.deployed().then(function(instance) {
+        ethreonInstance = instance;
       
         // Execute adopt as a transaction by sending account
-        return adoptionInstance.adopt(petId, {from: account});
+        return ethreonInstance.adopt(petId, {from: account});
       }).then(function(result) {
         return App.markAdopted();
       }).catch(function(err) {

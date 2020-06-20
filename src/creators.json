@@ -1,0 +1,17 @@
+[
+  {
+    "id": 0,
+    "name": "Shubham",
+    "picture": "images/shubham.jpg"
+  },
+  {
+    "id": 1,
+    "name": "Saptarishi",
+    "picture": "images/default.jpeg"
+  },
+  {
+    "id": 2,
+    "name": "Aadish",
+    "picture": "images/default.jpeg"
+  }
+]

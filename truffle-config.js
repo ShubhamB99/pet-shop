@@ -1,4 +1,4 @@
-const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
 const mnemonic = fs.readFileSync(".secret").toString().trim();
 
@@ -13,6 +13,15 @@ module.exports = {
     },
     develop: {
       port: 8545
+    },
+    goerli: {
+      provider: () => {
+        return new HDWalletProvider(mnemonic, 'https://goerli.infura.io/v3/381549724f704aee9a09b24a7033f368', 0)
+      },
+      network_id: '5', // eslint-disable-line camelcase
+      gas: 4465030,
+      gasPrice: 10000000000,
+      timeoutBlocks: 200
     },
     matic: {
       provider: () => new HDWalletProvider(mnemonic, `https://rpc-mumbai.matic.today`),

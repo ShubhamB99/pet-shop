@@ -295,10 +295,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        98,
-                        99
+                        481,
+                        482
                       ],
-                      "referencedDeclaration": 98,
+                      "referencedDeclaration": 481,
                       "src": "171:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -381,7 +381,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 95,
+                        "referencedDeclaration": 478,
                         "src": "234:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -855,10 +855,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        98,
-                        99
+                        481,
+                        482
                       ],
-                      "referencedDeclaration": 98,
+                      "referencedDeclaration": 481,
                       "src": "171:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -941,7 +941,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 95,
+                        "referencedDeclaration": 478,
                         "src": "234:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -1199,8 +1199,7 @@
     }
   },
   "schemaVersion": "3.2.0",
-  "updatedAt": "2020-06-16T15:18:49.854Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-06-17T21:37:38.550Z",
   "devdoc": {
     "methods": {}
   },

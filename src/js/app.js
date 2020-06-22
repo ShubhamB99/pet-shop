@@ -44,62 +44,106 @@ App = {
     }
     web3 = new Web3(App.web3Provider);
 
+    // console.log(web3);
+
+    var accounts = await web3.eth.getAccounts();
+    web3.eth.defaultAccount = accounts[0];
+
+    console.log('Web3 initiated!');
+
     return App.initContract();
   },
 
-  initContract: function() {
+  initContract: async function() {
+    
+    console.log('Initiating smart contract!');
+    
     $.getJSON('Ethreon.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
       var EthreonArtifact = data;
       App.contracts.Ethreon = TruffleContract(EthreonArtifact);
-    
-      // Set the provider for our contract
+
       App.contracts.Ethreon.setProvider(App.web3Provider);
-    
-      // Use our contract to retrieve and mark the adopted pets
-      return App.markAdopted();                                             // Do a similar to get mark subscribed
+      console.log(App.contracts.Ethreon);
+      console.log('Contract set!');
+      console.log('Now registering user');
+
+      return App.registerUser();
+      // Use our contract to retrieve and mark the subscriptions
+      // return App.markAdopted();                                             // Do a similar to get mark subscribed
     });
+
+    
+
+    var addrElem = $('.address');
+    var subsElem = $('.subscriptions');
+    
+    addrElem.text(addrElem.text().replace('loading...', web3.eth.defaultAccount));
+    subsElem.text(subsElem.text().replace('loading...', web3.eth.defaultAccount));
+
+    // return App.bindEvents();
+  },
+
+  registerUser: async function() {
+    var ethreonInstance;
+    await App.contracts.Ethreon.deployed().then(async function(instance) {
+      ethreonInstance = instance;
+      console.log('Instance here');
+      console.log(ethreonInstance);
+      console.log(web3.eth.defaultAccount);
+      return await ethreonInstance.newPatronSignup({from:web3.eth.defaultAccount})
+    }).then(function(subs){
+      console.log(subs);
+      console.log(subs.events);
+    });
+
+    // Notification for welcome back/ New user welcome!
+    return App.markSubscribed();
+  },
+
+  markSubscribed: async function() {
+    console.log('Subscribe time');
+    var ethreonInstance;
+    await App.contracts.Ethreon.deployed().then(async function(instance) {
+      ethreonInstance = instance;
+      console.log('Instance here');
+      console.log(ethreonInstance);
+      ethreonInstance.numPatrons({from:web3.eth.defaultAccount}).then(function(data) { console.log(data); });
+      return await ethreonInstance.getSubscriptions({from:web3.eth.defaultAccount});
+    }).then(function(subs){
+      console.log(subs);
+    });
+    
+    // Highlight creators who're subscribed to
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '.btn-subscribe', App.newSubscription(1));      // Add data-id instead of static number
-    $(document).on('click', '.btn-tip', App.tipCreator(1));
+    $(document).on('click', '.btn-subscribe', App.newSubscription()); //$('.btn-subscribe').attr('data-id')));   // Send address of creator to function
+    // $(document).on('click', '.btn-tip', App.tipCreator()); //$('.btn-tip').attr('data-id')));
   },
 
-  markAdopted: function(adopters, account) {
-    /*
-     * Replace me...
-     */
-  },
-
-  handleAdopt: function(event) {
-    event.preventDefault();
-
-    var petId = parseInt($(event.target).data('id'));
-
+  newSubscription : async function () {
     var ethreonInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-    
-      var account = accounts[0];
-    
-      App.contracts.Ethreon.deployed().then(function(instance) {
-        ethreonInstance = instance;
-      
-        // Execute adopt as a transaction by sending account
-        return ethreonInstance.adopt(petId, {from: account});
-      }).then(function(result) {
-        return App.markAdopted();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+    App.contracts.Ethreon.deployed().then(async function(instance) {
+      ethreonInstance = instance;
+      console.log('Getting a subscription now!')
+      return await ethreonInstance.newSubscription('0x62871dD3d970F4E0A51D310fd6166f9c6fAac93d', {from:web3.eth.defaultAccount});
+    }).then(function(subs){
+      console.log(subs);
     });
-  }
+  }//,
+
+  // tipCreator : function () {
+  //   var ethreonInstance;
+  //   App.contracts.Ethreon.deployed().then(function(instance) {
+  //     ethreonInstance = instance;
+  //     return ethreonInstance.tipCreator('0x62871dD3d970F4E0A51D310fd6166f9c6fAac93d', {from:web3.eth.defaultAccount});
+  //   }).then(function(subs){
+  //     console.log(subs);
+  //   });
+  // }
 
 };
 

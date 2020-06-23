@@ -85,17 +85,18 @@ App = {
   },
 
   registerUser: async function() {
-    var ethreonInstance;
-    await App.contracts.Ethreon.deployed().then(async function(instance) {
-      ethreonInstance = instance;
-      console.log('Instance here');
-      console.log(ethreonInstance);
-      console.log(web3.eth.defaultAccount);
-      return await ethreonInstance.newPatronSignup({from:web3.eth.defaultAccount})
-    }).then(function(subs){
-      console.log(subs);
-      console.log(subs.events);
-    });
+    var ethreonInstance = await App.contracts.Ethreon.deployed();
+    var account = await web3.eth.getAccounts();
+    web3.eth.defaultAccount = account[0];
+    var logs = await ethreonInstance.newPatronSignup({from:web3.eth.defaultAccount});
+    console.log(logs);
+    var bn = logs.receipt.blockNumber;
+    console.log(bn);
+    var events = await ethreonInstance.getPastEvents('allEvents', {fromBlock:bn, toBlock: bn});
+    console.log(events);
+    console.log(events[0].event);
+    console.log(events[0].event == "WelcomeBackPatron");
+    // Give out notification based on event name
 
     // Notification for welcome back/ New user welcome!
     return App.markSubscribed();
@@ -103,37 +104,39 @@ App = {
 
   markSubscribed: async function() {
     console.log('Subscribe time');
-    var ethreonInstance;
-    await App.contracts.Ethreon.deployed().then(async function(instance) {
-      ethreonInstance = instance;
-      console.log('Instance here');
-      console.log(ethreonInstance);
-      ethreonInstance.numPatrons({from:web3.eth.defaultAccount}).then(function(data) { console.log(data); });
-      return await ethreonInstance.getSubscriptions({from:web3.eth.defaultAccount});
-    }).then(function(subs){
-      console.log(subs);
-    });
+    var ethreonInstance = await App.contracts.Ethreon.deployed();
+    var account = await web3.eth.getAccounts();
+    web3.eth.defaultAccount = account[0];
+    var logs = await ethreonInstance.getSubscriptions({from:web3.eth.defaultAccount});
+    console.log(logs);
     
     // Highlight creators who're subscribed to
-
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '.btn-subscribe', App.newSubscription()); //$('.btn-subscribe').attr('data-id')));   // Send address of creator to function
+    $(document).on('click', '.btn-subscribe', App.newSubscription(cid)); //$('.btn-subscribe').attr('data-id')));   // Send address of creator to function
     // $(document).on('click', '.btn-tip', App.tipCreator()); //$('.btn-tip').attr('data-id')));
   },
 
-  newSubscription : async function () {
-    var ethreonInstance;
-    App.contracts.Ethreon.deployed().then(async function(instance) {
-      ethreonInstance = instance;
-      console.log('Getting a subscription now!')
-      return await ethreonInstance.newSubscription('0x62871dD3d970F4E0A51D310fd6166f9c6fAac93d', {from:web3.eth.defaultAccount});
-    }).then(function(subs){
-      console.log(subs);
-    });
-  }//,
+  newSubscription : async function (cid) {
+    console.log('New subscription');
+    var ethreonInstance = await App.contracts.Ethreon.deployed();
+    var account = await web3.eth.getAccounts();
+    web3.eth.defaultAccount = account[0];
+    var logs = await ethreonInstance.newSubscription(cid, {from:web3.eth.defaultAccount});
+    console.log(logs);
+    // });
+  },
+
+  getContent : async function(cid) {
+    console.log('Getting content');
+    var ethreonInstance = await App.contracts.Ethreon.deployed();
+    var account = await web3.eth.getAccounts();
+    web3.eth.defaultAccount = account[0];
+    var logs = await ethreonInstance.getContent(cid, {from:web3.eth.defaultAccount});
+    console.log(logs);
+  }
 
   // tipCreator : function () {
   //   var ethreonInstance;

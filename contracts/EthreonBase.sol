@@ -33,7 +33,7 @@ contract Patron {
         }
         else {
             alreadyRegisteredPatron[msg.sender] = true;
-            numPatrons.add(1);
+            numPatrons = numPatrons.add(1);
             emit NewPatron();
         }
     }
@@ -62,6 +62,9 @@ contract Creator {
     // Total creators on platform
     uint public numCreators;
 
+    // Get all creators for frontend
+    address[] public allCreators;
+
     // Mapping to keep track of new creators
     mapping (address => bool) alreadyRegisteredCreator;
 
@@ -85,7 +88,8 @@ contract Creator {
         }
         else {
             alreadyRegisteredCreator[msg.sender] = true;
-            numCreators.add(1);
+            allCreators.push(msg.sender);
+            numCreators = numCreators.add(1);
             emit NewCreator();
         }
     }
